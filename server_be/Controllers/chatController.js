@@ -2,7 +2,6 @@
 //findChat
 
 const chatModel = require('../Models/chatModel')
-const { model, models } = require('mongoose');
 
 //create chat
 const createChat = async (req, res) => {
