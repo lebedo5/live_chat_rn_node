@@ -10,21 +10,20 @@ export class UserAuth {
     private isLoggedStatus = false;
 
     public async login(data: {
-        accessToken: string;
-        refreshToken: string;
-        idToken: string;
+        token: string;
+        _id: string
     }) {
         this.setIsLoggedIn(true);
+        console.log('data', data)
         await EncryptedStorage.multiSet([
-            [TOKEN_KEY, data.accessToken],
-            [REFRESH_TOKEN_KEY, data.refreshToken],
-            [TOKEN_ID, data.idToken],
+            [TOKEN_KEY, data.token],
+            [USER_ID_KEY, data._id],
         ]);
     }
 
     public async logout(): Promise<void> {
         EndPointService.dropAuthorizationToken();
-        await EncryptedStorage.multiRemove([TOKEN_KEY, REFRESH_TOKEN_KEY]);
+        await EncryptedStorage.multiRemove([TOKEN_KEY, USER_ID_KEY]);
         this.setIsLoggedIn(false);
         return Promise.resolve();
     }
@@ -44,9 +43,9 @@ export class UserAuth {
         return await EncryptedStorage.getItem(TOKEN_ID);
     }
 
-    async getUserID(): Promise<string> {
+    async getUserID(): Promise<string | null> {
         const id = await EncryptedStorage.getItem(USER_ID_KEY);
-        return id && JSON.parse(id);
+        return id ? id : null
     }
 
     async repair(): Promise<boolean> {

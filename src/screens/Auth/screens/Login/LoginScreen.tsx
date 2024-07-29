@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useState } from 'react';
-import { Pressable } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView } from 'react-native';
 import { View } from 'react-native';
 import { useDispatch } from '../../../../hooks/dispatch';
 import { login } from '../../../../store/thunks/auth-thunks';
@@ -13,6 +13,18 @@ import SubmitButton from '../../../../components/buttons/SubmitButton';
 import { ArrowRightIcon } from '../../../../components/elements/icons/ArrowRightIcon';
 import { useNavigation } from '@react-navigation/native';
 import routes from '../../../../navigations/routes';
+import InputFields from '../../../../components/forms/components/InputFields';
+import { Button } from '../../../../components/buttons/Button';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { signupSchema } from '../SignUp/schema/signupSchema';
+import { SignUpFormData } from '../SignUp/SignUpScreen';
+import { validationSchema } from './schema';
+
+interface LoginFormData {
+    email: string;
+    password: string;
+}
 
 const LoginScreen: FC = () => {
     const dispatch = useDispatch();
@@ -23,56 +35,63 @@ const LoginScreen: FC = () => {
     const { themeValue } = useTheme();
     const styles = useStyles(themeValue);
 
+    const {
+        control,
+        handleSubmit,
+        setError,
+        formState: { errors, isSubmitting },
+    } = useForm<LoginFormData>({
+        mode: 'onSubmit',
+        resolver: yupResolver(validationSchema),
+    });
+
     const handleAuthorize = useCallback(async () => {
         setIsLoading(true);
         try {
-            // await dispatch(login());
         } catch (error) {
             console.log('error login', error);
         }
         setIsLoading(false);
     }, []);
 
+    const loginConfirm = async (data: any) => {
+        try {
+           await dispatch(login(data));
+
+        }catch (error) {
+
+        }
+    }
+
     return (
         <Layout bgColor={themeValue.lightBlue}>
             <View style={styles.rootContainer}>
-                <View style={styles.logoBlock}>
-                    <LogoIcon width={163} height={80} color={themeValue.blue} />
-                </View>
-                <View
-                    style={{
-                        width: width - 40,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}>
-                    <Text boldFont style={styles.title}>
-                        A purely private experience
-                    </Text>
-                    <Text style={styles.descriptionText}>
-                        This is a possible description paragraph placeholder,
-                        not using to much lines.
-                    </Text>
-                    <SubmitButton
-                        isSubmitting={isLoading}
-                        handleSubmit={handleAuthorize}
-                        buttonText={'Get Started'}
-                    />
-                    <View style={styles.subBlock}>
-                        <Text style={styles.subText}>Customer Only App</Text>
-                        <Pressable
-                            style={styles.linkBlock}
-                            onPress={() =>
-                                navigation.navigate(routes.BecomeCustomer)
-                            }>
-                            <Text boldFont style={styles.linkText}>
-                                become a customer
-                            </Text>
-                            <Text style={styles.arrowBlock}>
-                                <ArrowRightIcon height={14} color={'#000000'} />
-                            </Text>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                    <ScrollView contentContainerStyle={{ flex: 1,  justifyContent: 'center', alignItems: 'center' }}>
+                        <InputFields
+                            control={control}
+                            name={'email'}
+                            inputProps={{
+                                placeholder: 'Email',
+                            }}
+                            error={errors.email?.message}
+                        />
+                        <InputFields
+                            control={control}
+                            name={'password'}
+                            inputProps={{
+                                placeholder: 'Password',
+                            }}
+                            error={errors.password?.message}
+                        />
+
+                        <Button title={'Login'} onPress={handleSubmit(loginConfirm)} />
+                        <Pressable>
+                            <Text>Sign Up</Text>
                         </Pressable>
-                    </View>
-                </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
             </View>
         </Layout>
     );

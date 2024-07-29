@@ -1,9 +1,9 @@
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
-import urls from '../../../config/env';
+import { API_URL } from '../../../config/env';
 import UserAuthService from '../user-auth';
 
 // Set default params and headers for axios
-axios.defaults.baseURL = `${urls.apiUrl}`;
+axios.defaults.baseURL = `${API_URL}`;
 // axios.defaults.headers.common['content-type'] =
 //     'multipart/form-data;charset=utf-8';
 // axios.defaults.headers.common.Accept = 'multipart/form-data';

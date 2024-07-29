@@ -1,11 +1,12 @@
 import * as yup from 'yup';
 
 export const validationSchema = yup.object().shape({
-    username: yup
+    email: yup
         .string()
-        .required('Please fill the mandatory field')
-        .email()
-        .label('Username'),
+        .email('Please enter a valid email')
+        .lowercase('Please use a lower case')
+        .max(180)
+        .required('This field is blank'),
     password: yup
         .string()
         .required('Please fill the mandatory field')

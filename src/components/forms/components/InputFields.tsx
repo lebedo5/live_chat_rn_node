@@ -155,6 +155,9 @@ const InputField = React.forwardRef(
                     </Pressable>
                     {children}
                 </>
+                {error && <Text boldFont style={{ color: theme.red }}>
+                    {error}
+                </Text>}
             </View>
         );
     },

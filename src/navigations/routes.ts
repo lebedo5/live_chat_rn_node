@@ -3,7 +3,12 @@ export default {
     UserFlow: 'UserFlow' as const,
     MainTabs: 'MainTabs' as const,
     registration: {
-        Login: 'LoginScreen' as const
+        Login: 'LoginScreen' as const,
+        SignUp: 'SignUpScreen' as const
+    },
+    userFlow: {
+        Chat: 'ChatScreen' as const,
+        ChatList: 'ChatList' as const
     }
 };
 
@@ -14,6 +19,10 @@ export type RootStackParamList = {
     MainTabs: undefined;
     registration: {
         Login: undefined;
+        SignUp: undefined
     };
-    userFlow: {};
+    userFlow: {
+        Chat: undefined
+        ChatList: undefined
+    }
 };

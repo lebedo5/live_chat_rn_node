@@ -1,23 +1,23 @@
+// getUser
+
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { ThunkConfig } from '../configure-store';
 import { resolveApiCall } from '../../services/api-handlers/api-resolver';
-import { AuthApi } from '../../services/end-points';
+import { AuthApi, UserApi } from '../../services/end-points';
 import UserAuthService from '../../services/user-auth';
-import { clearToken } from '../reducers/auth-reducer';
 
-export const login = createAsyncThunk<any, undefined, ThunkConfig>(
-    'auth/login',
+export const getUser = createAsyncThunk<any, undefined, ThunkConfig>(
+    'user/get-user',
     async (payload, thunkAPI) => {
         const { dispatch, getState } = thunkAPI;
-        const { auth } = getState();
+        const { user } = getState();
 
+        const userId = await UserAuthService.getUserID()
         return resolveApiCall(
             thunkAPI,
-            auth,
+            user,
             async () => {
-                const { data } = await AuthApi.login(payload)
-                console.log('data', data)
-                await UserAuthService.login(data)
+                const { data } = await UserApi.getUser({ userId })
                 return data
             },
             async err => {
@@ -27,30 +27,24 @@ export const login = createAsyncThunk<any, undefined, ThunkConfig>(
     },
 );
 
-export const signup = createAsyncThunk<any, undefined, ThunkConfig>(
-    'auth/signup',
+// getAllUsers
+
+export const getAllUsers = createAsyncThunk<any, undefined, ThunkConfig>(
+    'user/get-all-user',
     async (payload, thunkAPI) => {
         const { dispatch, getState } = thunkAPI;
-        const { auth } = getState();
+        const { user } = getState();
+
         return resolveApiCall(
             thunkAPI,
-            auth,
+            user,
             async () => {
-                const { data } = await AuthApi.signup(payload)
+                const { data } = await UserApi.getAllUsers()
                 return data
             },
             async err => {
                 const { response } = err;
             },
         );
-    },
-);
-
-export const logout = createAsyncThunk<void, void, ThunkConfig>(
-    'auth/logout',
-    async (payload, thunkAPI) => {
-        const { dispatch } = thunkAPI;
-        await UserAuthService.logout();
-        dispatch(clearToken());
     },
 );
