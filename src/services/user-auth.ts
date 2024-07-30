@@ -45,7 +45,7 @@ export class UserAuth {
 
     async getUserID(): Promise<string | null> {
         const id = await EncryptedStorage.getItem(USER_ID_KEY);
-        return id ? id : null
+        return id && id;
     }
 
     async repair(): Promise<boolean> {

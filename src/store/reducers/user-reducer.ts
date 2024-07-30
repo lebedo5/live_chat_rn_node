@@ -33,13 +33,12 @@ export const slice = createSlice({
             .addCase(getAllUsers.pending, takeOne.pendingActionCase)
             .addCase(getAllUsers.fulfilled, (state, action) => {
                 takeOne.fulfilledActionCase(state, action);
-                state.users = action.payload;
+                state.users = state.currentUser._id ? action.payload.filter((user) => user._id !== state.currentUser._id) : action.payload;
             })
             .addCase(getAllUsers.rejected, takeOne.rejectedActionCase)
-        // getAllUsers
     },
 });
 
-export const {  } = slice.actions;
+export const { } = slice.actions;
 
 export default slice.reducer;

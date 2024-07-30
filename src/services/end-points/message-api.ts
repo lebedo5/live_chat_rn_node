@@ -1,10 +1,22 @@
 import {EndPointService} from '../api-handlers/axios';
 
-const createMessage = () => {
-  return EndPointService.get('/messages');
+const createMessage = ({ chatId, senderId, text }) => {
+  const params = {
+    chatId,
+    senderId,
+    text
+  }
+  return EndPointService.post('/messages', JSON.stringify(params), {
+    headers: {
+      "Content-Type": 'application/json'
+    }
+  });
 };
 
-const getAllMessageFromChat = () => {
-  return EndPointService.get('/messages');
+const getAllMessageFromChat = (chatId: string) => {
+  return EndPointService.get(`/messages/${chatId}`);
 };
-export default {};
+export default {
+  createMessage,
+  getAllMessageFromChat
+};

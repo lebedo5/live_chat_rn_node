@@ -6,7 +6,7 @@ export const useStyles = (theme: ThemeType) => {
     return StyleSheet.create({
         buttonBlock: {
             paddingVertical: 15,
-            width: width - 40,
+            width: width - 30,
             justifyContent: 'center',
             alignItems: 'center',
             marginBottom: 10,

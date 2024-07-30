@@ -16,30 +16,33 @@ import { View } from 'react-native';
 import UserAuthService from './src/services/user-auth';
 import { setAuthToken } from './src/store/reducers/auth-reducer';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import { ChatContext } from './src/components/ChatContext';
+import socketService from './src/utils/socketService';
 
 enableScreens();
 function App(): JSX.Element | null {
-  const [appIsReady, setAppIsReady] = useState(false);
+    const [appIsReady, setAppIsReady] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const authToken = await UserAuthService.getAuthToken();
-      store.dispatch(setAuthToken(authToken));
-      setAppIsReady(true);
-    })();
-  }, []);
+    useEffect(() => {
+        socketService.initializeSocket();
+        (async () => {
+            const authToken = await UserAuthService.getAuthToken();
+            store.dispatch(setAuthToken(authToken));
+            setAppIsReady(true);
+        })();
+    }, []);
 
-  return (
-      <View style={{ flex: 1 }}>
-        <Provider store={store}>
-          <SafeAreaProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <AppNavigator />
-            </GestureHandlerRootView>
-          </SafeAreaProvider>
-        </Provider>
-      </View>
-  );
+    return (
+        <View style={{ flex: 1 }}>
+            <Provider store={store}>
+                <SafeAreaProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                        <AppNavigator />
+                    </GestureHandlerRootView>
+                </SafeAreaProvider>
+            </Provider>
+        </View>
+    );
 }
 
 export default App;

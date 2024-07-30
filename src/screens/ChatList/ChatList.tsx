@@ -3,67 +3,72 @@ import {Text} from '../../components/text/Text';
 import Layout from '../../components/Layout';
 import {useSelector} from 'react-redux';
 import {
-  getAllUsersSelector,
-  getUserSelector,
+    getAllUsersSelector,
 } from '../../store/selectors/user-selector';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {useCallback} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect } from "react";
 import {getAllUsers, getUser} from '../../store/thunks/user-thunk';
 import {useDispatch} from '../../hooks/dispatch';
 import routes from '../../navigations/routes';
+import { createChat } from '../../store/thunks/chat-thunks';
+import { Button } from "../../components/buttons/Button";
 
 const ChatList = () => {
-  const dispatch = useDispatch();
-  const navigation = useNavigation<any>();
+    const dispatch = useDispatch();
+    const navigation = useNavigation<any>();
+    const users = useSelector(getAllUsersSelector);
 
-  const currentUser = useSelector(getUserSelector);
-  const users = useSelector(getAllUsersSelector);
+    useEffect(() => {
+        (async () => {
+            await dispatch(getUser());
+        })();
+        (async () => {
+            await dispatch(getAllUsers());
+        })();
+    }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      (async () => {
-        await dispatch(getUser());
-      })();
-      (async () => {
-        await dispatch(getAllUsers());
-      })();
-    }, []),
-  );
+    const onCreateChat = async (friendId: string) => {
+        try {
+            const result = await dispatch(
+                createChat({ secondId: friendId }),
+            ).unwrap();
+            navigation.navigate(routes.userFlow.Chat, { chatId: result._id, friendId  });
+        } catch (error) {
+            console.log('error', error);
+        }
+    };
 
-  const createChat = async () => {
-    try {
-    } catch (error) {
-      console.log('error', error);
-    }
-    navigation.navigate(routes.userFlow.Chat);
-  };
-  return (
-    <Layout>
-      <View style={{marginHorizontal: 15}}>
-        <View style={{marginTop: 20}}>
-          <Text>All Users</Text>
-        </View>
-        <FlatList
-          data={users}
-          style={{width: '100%', marginTop: 20}}
-          renderItem={({item}) => {
-            return (
-              <Pressable
-                style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 10,
-                  backgroundColor: 'lightblue',
-                  marginBottom: 20,
-                }}
-                onPress={() => {}}>
-                <Text style={{color: 'black'}}>{item.name}</Text>
-              </Pressable>
-            );
-          }}
-        />
-      </View>
-    </Layout>
-  );
+    return (
+        <Layout>
+            <View style={{marginHorizontal: 15}}>
+                <View style={{marginTop: 20}}>
+                    <Text>All Users</Text>
+                </View>
+                <FlatList
+                    data={users}
+                    style={{width: '100%', marginTop: 20}}
+                    renderItem={({item}) => {
+                        return (
+                            <Pressable
+                                style={{
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 10,
+                                    backgroundColor: 'lightblue',
+                                    marginBottom: 20,
+                                }}
+                                onPress={() => onCreateChat(item._id)}>
+                                <Text style={{ color: 'black' }}>
+                                    {item.name}
+                                </Text>
+                            </Pressable>
+                        );
+                    }}
+                />
+                <Button title={'Create group'} />
+
+            </View>
+        </Layout>
+    );
 };
 
 export default ChatList;
